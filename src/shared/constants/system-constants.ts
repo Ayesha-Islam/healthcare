@@ -1,0 +1,17 @@
+export const SYSTEM_CONSTANTS = {
+    DEFAULT_APPOINTMENT_DURATION: 30,
+    MAX_RETRY_ATTEMPTS: 3,
+    SESSION_TIMEOUT_MS: 300000, // 5 minutes
+    MAX_CONVERSATION_TURNS: 20,
+    WORKING_HOURS: {
+        START: 9,
+        END: 17
+    },
+    WEEKEND_DAYS: [0, 6], // Sunday, Saturday
+    MAX_FUTURE_BOOKING_DAYS: 90,
+    MIN_BOOKING_NOTICE_HOURS: 2,
+    RATE_LIMIT: {
+        WINDOW_MS: 60000, // 1 minute
+        MAX_REQUESTS: 100
+    }
+};

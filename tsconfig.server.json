@@ -1,0 +1,40 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "module": "CommonJS",
+        "target": "ES2020",
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "noEmit": false,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "resolveJsonModule": true,
+        "moduleResolution": "node",
+        "jsx": "preserve",
+        "baseUrl": "./src",
+        "paths": {
+            "@/*": [
+                "./*"
+            ],
+            "@/db/generated": [
+                "./src/db/generated"
+            ]
+        }
+    },
+    "include": [
+        "src/server/**/*",
+        "src/server.ts",
+        "src/shared/**/*",
+        "src/db/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist",
+        "src/app/**/*",
+        "tests",
+        "**/*.test.ts",
+        "**/*.spec.ts"
+    ]
+}

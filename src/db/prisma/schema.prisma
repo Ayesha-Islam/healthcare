@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Patient {
+  id                 String         @id @default(uuid())
+  phoneNumber        String         @unique
+  firstName          String
+  lastName           String
+  dateOfBirth        DateTime
+  email              String?
+  address            String?
+  emergencyContact   String?
+  medicalHistory     String?
+  allergies          String?
+  currentMedications String?
+  insuranceInfo      String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  appointments       Appointment[]
+  voiceSessions      VoiceSession[]
+
+  @@map("patients")
+}
+
+model Doctor {
+  id           String        @id @default(uuid())
+  firstName    String
+  lastName     String
+  specialty    String
+  phone        String
+  email        String        @unique
+  isAvailable  Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  appointments Appointment[]
+
+  @@index([specialty])
+  @@index([isAvailable])
+  @@map("doctors")
+}
+
+model MedicalSymptom {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  category    String
+  urgency     Int
+  specialty   String
+  keywords    String[]
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([specialty])
+  @@index([urgency])
+  @@map("medical_symptoms")
+}
+
+model Appointment {
+  id             String   @id @default(uuid())
+  patientId      String
+  doctorId       String?
+  dateTime       DateTime
+  type           String
+  status         String   @default("SCHEDULED")
+  reason         String
+  symptoms       String?
+  notes          String?
+  doctorName     String?
+  duration       Int      @default(30)
+  reminderSent   Boolean  @default(false)
+  createdFrom    String   @default("ONLINE")
+  voiceSessionId String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  doctor         Doctor?  @relation(fields: [doctorId], references: [id])
+  patient        Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([dateTime])
+  @@index([status])
+  @@map("appointments")
+}
+
+model VoiceSession {
+  id             String          @id @default(uuid())
+  callSid        String          @unique
+  patientId      String?
+  phoneNumber    String
+  status         String          @default("ACTIVE")
+  intent         String?
+  transcript     String?
+  collectedInfo  String?
+  appointmentId  String?
+  transferred    Boolean         @default(false)
+  transferReason String?
+  duration       Int?
+  recordingUrl   String?
+  startedAt      DateTime        @default(now())
+  endedAt        DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  recordings     CallRecording[]
+  patient        Patient?        @relation(fields: [patientId], references: [id])
+
+  @@index([callSid])
+  @@index([patientId])
+  @@index([status])
+  @@map("voice_sessions")
+}
+
+model CallRecording {
+  id                  String       @id @default(uuid())
+  voiceSessionId      String
+  callSid             String
+  recordingUrl        String
+  recordingSid        String?
+  localPath           String?
+  duration            Int
+  format              String       @default("mp3")
+  transcription       String?
+  transcriptionStatus String       @default("PENDING")
+  qualityScore        Float?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  voiceSession        VoiceSession @relation(fields: [voiceSessionId], references: [id], onDelete: Cascade)
+
+  @@index([voiceSessionId])
+  @@index([callSid])
+  @@map("call_recordings")
+}
